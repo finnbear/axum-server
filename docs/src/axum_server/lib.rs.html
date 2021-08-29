@@ -69,6 +69,7 @@
 <span id="69">69</span>
 <span id="70">70</span>
 <span id="71">71</span>
+<span id="72">72</span>
 </pre><pre class="rust"><code><span class="doccomment">//! axum-server is a [`hyper`] server implementation designed to be used with [`axum`] framework.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Features</span>
@@ -132,6 +133,7 @@
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
 
 <span class="kw">mod</span> <span class="ident">server</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">util</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">server</span>::{<span class="ident">bind</span>, <span class="ident">Handle</span>, <span class="ident">Server</span>};
 
