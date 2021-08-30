@@ -273,6 +273,47 @@
 <span id="273">273</span>
 <span id="274">274</span>
 <span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Recording utilities for servers.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [`Recording`](Recording) type can be used to get data usage.</span>
@@ -313,8 +354,8 @@
 <span class="doccomment">//! }</span>
 <span class="doccomment">//! ```</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server::http_server::NoopAcceptor</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server::Accept</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server::http_server</span>::{<span class="ident">HttpServer</span>, <span class="ident">NoopAcceptor</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server</span>::{<span class="ident">Accept</span>, <span class="ident">Handle</span>, <span class="ident">MakeParts</span>};
 
 <span class="kw">use</span> <span class="ident">std::io</span>;
 <span class="kw">use</span> <span class="ident">std::pin::Pin</span>;
@@ -355,13 +396,60 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">MakeRecordingParts</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">recording_new</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>, <span class="ident">acceptor</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">HttpServer::new</span>(<span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">MakeRecordingParts::new</span>(<span class="ident">acceptor</span>))
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">MakeRecordingParts</span><span class="op">&lt;</span><span class="ident">NoopAcceptor</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">recording_from_service</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">HttpServer::new</span>(<span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">MakeRecordingParts::noop</span>())
+    }
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">MakeRecordingParts</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> {
+    <span class="ident">acceptor</span>: <span class="ident">A</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> <span class="ident">MakeRecordingParts</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">acceptor</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> { <span class="ident">acceptor</span> }
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">MakeRecordingParts</span><span class="op">&lt;</span><span class="ident">NoopAcceptor</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">noop</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">MakeRecordingParts::new</span>(<span class="ident">NoopAcceptor</span>)
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> <span class="ident">MakeParts</span> <span class="kw">for</span> <span class="ident">MakeRecordingParts</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">A</span>: <span class="ident">Clone</span>,
+{
+    <span class="kw">type</span> <span class="ident">Layer</span> <span class="op">=</span> <span class="ident">RecordingLayer</span>;
+    <span class="kw">type</span> <span class="ident">Acceptor</span> <span class="op">=</span> <span class="ident">RecordingAcceptor</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>;
+
+    <span class="kw">fn</span> <span class="ident">make_parts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident"><span class="self">Self</span>::Layer</span>, <span class="ident"><span class="self">Self</span>::Acceptor</span>) {
+        <span class="kw">let</span> <span class="ident">recording</span> <span class="op">=</span> <span class="ident">Recording::default</span>();
+
+        <span class="kw">let</span> <span class="ident">layer</span> <span class="op">=</span> <span class="ident">RecordingLayer::new</span>(<span class="ident">recording</span>.<span class="ident">clone</span>());
+        <span class="kw">let</span> <span class="ident">acceptor</span> <span class="op">=</span> <span class="ident">RecordingAcceptor::new</span>(<span class="self">self</span>.<span class="ident">acceptor</span>.<span class="ident">clone</span>(), <span class="ident">recording</span>);
+
+        (<span class="ident">layer</span>, <span class="ident">acceptor</span>)
+    }
+}
+
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">RecordingLayer</span> {
     <span class="ident">recording</span>: <span class="ident">Recording</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">RecordingLayer</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">recording</span>: <span class="ident">Recording</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">recording</span>: <span class="ident">Recording</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">recording</span> }
     }
 }
@@ -381,14 +469,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> <span class="ident">RecordingAcceptor</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">inner</span>: <span class="ident">A</span>, <span class="ident">recording</span>: <span class="ident">Recording</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">inner</span>: <span class="ident">A</span>, <span class="ident">recording</span>: <span class="ident">Recording</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">inner</span>, <span class="ident">recording</span> }
-    }
-}
-
-<span class="kw">impl</span> <span class="ident">RecordingAcceptor</span><span class="op">&lt;</span><span class="ident">NoopAcceptor</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_recording</span>(<span class="ident">recording</span>: <span class="ident">Recording</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">RecordingAcceptor::new</span>(<span class="ident">NoopAcceptor</span>, <span class="ident">recording</span>)
     }
 }
 
@@ -413,7 +495,7 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="ident">RecordingStream</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">inner</span>: <span class="ident">I</span>, <span class="ident">recording</span>: <span class="ident">Recording</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">inner</span>: <span class="ident">I</span>, <span class="ident">recording</span>: <span class="ident">Recording</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">inner</span>, <span class="ident">recording</span> }
     }
 }

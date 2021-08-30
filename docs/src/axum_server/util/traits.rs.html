@@ -55,7 +55,7 @@
 <span class="kw">use</span> <span class="ident">std::future::Future</span>;
 <span class="kw">use</span> <span class="ident">tower_service::Service</span>;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&gt;</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait</span> <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="self">Self</span>: <span class="ident">Service</span><span class="op">&lt;</span>
             <span class="ident">Request</span>,
@@ -85,7 +85,7 @@
     <span class="kw">type</span> <span class="ident">RespBody</span> <span class="op">=</span> <span class="ident">B</span>;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SendBody</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait</span> <span class="ident">SendBody</span>
 <span class="kw">where</span>
     <span class="self">Self</span>: <span class="ident">Body</span><span class="op">&lt;</span><span class="ident">Data</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::SendData</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::BoxedError</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {

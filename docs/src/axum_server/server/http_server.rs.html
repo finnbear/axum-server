@@ -151,7 +151,31 @@
 <span id="151">151</span>
 <span id="152">152</span>
 <span id="153">153</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server</span>::{<span class="ident">Accept</span>, <span class="ident">Handle</span>, <span class="ident">ListenerTask</span>};
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server</span>::{<span class="ident">Accept</span>, <span class="ident">Handle</span>, <span class="ident">ListenerTask</span>, <span class="ident">MakeParts</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util::HyperService</span>;
 
 <span class="kw">use</span> <span class="ident">std::io</span>;
@@ -169,6 +193,31 @@
 <span class="kw">use</span> <span class="ident">hyper::server::conn::Http</span>;
 <span class="kw">use</span> <span class="ident">hyper::Request</span>;
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">CloneParts</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">A</span><span class="op">&gt;</span> {
+    <span class="ident">layer</span>: <span class="ident">L</span>,
+    <span class="ident">acceptor</span>: <span class="ident">A</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">CloneParts</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">A</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">layer</span>: <span class="ident">L</span>, <span class="ident">acceptor</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> { <span class="ident">layer</span>, <span class="ident">acceptor</span> }
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">MakeParts</span> <span class="kw">for</span> <span class="ident">CloneParts</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">A</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">L</span>: <span class="ident">Clone</span>,
+    <span class="ident">A</span>: <span class="ident">Clone</span>,
+{
+    <span class="kw">type</span> <span class="ident">Layer</span> <span class="op">=</span> <span class="ident">L</span>;
+    <span class="kw">type</span> <span class="ident">Acceptor</span> <span class="op">=</span> <span class="ident">A</span>;
+
+    <span class="kw">fn</span> <span class="ident">make_parts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident"><span class="self">Self</span>::Layer</span>, <span class="ident"><span class="self">Self</span>::Acceptor</span>) {
+        (<span class="self">self</span>.<span class="ident">layer</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">acceptor</span>.<span class="ident">clone</span>())
+    }
+}
+
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">enum</span> <span class="ident">Mode</span> {
     <span class="ident">Shutdown</span>,
@@ -176,34 +225,32 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span> {
-    <span class="ident">layer</span>: <span class="ident">L</span>,
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">M</span><span class="op">&gt;</span> {
     <span class="ident">service</span>: <span class="ident">S</span>,
-    <span class="ident">acceptor</span>: <span class="ident">A</span>,
     <span class="ident">handle</span>: <span class="ident">Handle</span>,
+    <span class="ident">make_parts</span>: <span class="ident">M</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>, <span class="ident">layer</span>: <span class="ident">L</span>, <span class="ident">acceptor</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">M</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">M</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>, <span class="ident">make_parts</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
-            <span class="ident">layer</span>,
             <span class="ident">service</span>,
-            <span class="ident">acceptor</span>,
             <span class="ident">handle</span>,
+            <span class="ident">make_parts</span>,
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">NoopLayer</span>, <span class="ident">S</span>, <span class="ident">NoopAcceptor</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_service</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">HttpServer::new</span>(<span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">NoopLayer</span>, <span class="ident">NoopAcceptor</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">CloneParts</span><span class="op">&lt;</span><span class="ident">NoopLayer</span>, <span class="ident">NoopAcceptor</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_service</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">HttpServer::new</span>(<span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">CloneParts::new</span>(<span class="ident">NoopLayer</span>, <span class="ident">NoopAcceptor</span>))
     }
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">NoopLayer</span>, <span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_acceptor</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>, <span class="ident">acceptor</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">HttpServer::new</span>(<span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">NoopLayer</span>, <span class="ident">acceptor</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">CloneParts</span><span class="op">&lt;</span><span class="ident">NoopLayer</span>, <span class="ident">A</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">from_acceptor</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>, <span class="ident">acceptor</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">HttpServer::new</span>(<span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">CloneParts::new</span>(<span class="ident">NoopLayer</span>, <span class="ident">acceptor</span>))
     }
 }
 
@@ -218,14 +265,15 @@
     };
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">M</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">M</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="ident">L</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">AddExtension</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">SocketAddr</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">L::Service</span>: <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">S</span>: <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">A</span>: <span class="ident">Accept</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">M</span>: <span class="ident">MakeParts</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">M::Layer</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">AddExtension</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">SocketAddr</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="op">&lt;</span><span class="ident">M::Layer</span> <span class="kw">as</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">AddExtension</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">SocketAddr</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Service</span>: <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">M::Acceptor</span>: <span class="ident">Accept</span>,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">serve_on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">listener</span>: <span class="ident">TcpListener</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListenerTask</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">serve_on</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">listener</span>: <span class="ident">TcpListener</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ListenerTask</span> {
         <span class="kw">let</span> <span class="ident">server</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
 
         <span class="ident">tokio::spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
@@ -233,11 +281,11 @@
 
             <span class="kw">let</span> <span class="ident">mode</span> <span class="op">=</span> <span class="kw">loop</span> {
                 <span class="kw">let</span> (<span class="ident">stream</span>, <span class="ident">addr</span>) <span class="op">=</span> <span class="macro">accept!</span>(<span class="kw-2">&amp;</span><span class="ident">server</span>.<span class="ident">handle</span>, <span class="kw-2">&amp;</span><span class="ident">listener</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">acceptor</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">acceptor</span>.<span class="ident">clone</span>();
+                <span class="kw">let</span> (<span class="ident">layer</span>, <span class="ident">acceptor</span>) <span class="op">=</span> <span class="ident">server</span>.<span class="ident">make_parts</span>.<span class="ident">make_parts</span>();
 
                 <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">service</span>.<span class="ident">clone</span>();
                 <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">AddExtension::new</span>(<span class="ident">service</span>, <span class="ident">addr</span>);
-                <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">server</span>.<span class="ident">layer</span>.<span class="ident">layer</span>(<span class="ident">service</span>);
+                <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">layer</span>.<span class="ident">layer</span>(<span class="ident">service</span>);
 
                 <span class="kw">let</span> <span class="ident">conn</span> <span class="op">=</span> <span class="ident">tokio::spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="ident">acceptor</span>.<span class="ident">accept</span>(<span class="ident">stream</span>).<span class="kw">await</span> {
@@ -280,7 +328,7 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NoopAcceptor</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">NoopAcceptor</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="ident">Accept</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NoopAcceptor</span>
 <span class="kw">where</span>
@@ -295,7 +343,7 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NoopLayer</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">NoopLayer</span>;
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NoopLayer</span> {
     <span class="kw">type</span> <span class="ident">Service</span> <span class="op">=</span> <span class="ident">S</span>;
