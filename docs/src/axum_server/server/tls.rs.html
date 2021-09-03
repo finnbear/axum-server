@@ -766,11 +766,38 @@
 <span id="766">766</span>
 <span id="767">767</span>
 <span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Tls implementation for HTTP server.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [`TlsServer`](TlsServer) can be used just like [`Server`](crate::server::Server) to serve apps.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! # Example</span>
+<span class="doccomment">//! # Examples</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## Hello World</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```rust,no_run</span>
 <span class="doccomment">//! use axum::{</span>
@@ -787,11 +814,36 @@
 <span class="doccomment">//!     Server::new()</span>
 <span class="doccomment">//!         .bind(&quot;127.0.0.1:3000&quot;)</span>
 <span class="doccomment">//!         .bind_rustls(&quot;127.0.0.1:3443&quot;)</span>
-<span class="doccomment">//!         .private_key_file(&quot;certs/key.pem&quot;)</span>
-<span class="doccomment">//!         .certificate_file(&quot;certs/cert.pem&quot;)</span>
+<span class="doccomment">//!         .private_key_file(&quot;examples/self-signed-certs/key.pem&quot;)</span>
+<span class="doccomment">//!         .certificate_file(&quot;examples/self-signed-certs/cert.pem&quot;)</span>
 <span class="doccomment">//!         .serve(app)</span>
 <span class="doccomment">//!         .await</span>
 <span class="doccomment">//!         .unwrap();</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## Uri Scheme</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```rust,no_run</span>
+<span class="doccomment">//! use axum::{extract::Extension, handler::get, http::uri::Scheme, Router};</span>
+<span class="doccomment">//! use axum_server::Server;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! #[tokio::main]</span>
+<span class="doccomment">//! async fn main() {</span>
+<span class="doccomment">//!     let app = Router::new().route(&quot;/&quot;, get(handler));</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     Server::new()</span>
+<span class="doccomment">//!         .bind(&quot;127.0.0.1:3000&quot;)</span>
+<span class="doccomment">//!         .bind_rustls(&quot;127.0.0.1:3443&quot;)</span>
+<span class="doccomment">//!         .private_key_file(&quot;examples/self-signed-certs/key.pem&quot;)</span>
+<span class="doccomment">//!         .certificate_file(&quot;examples/self-signed-certs/cert.pem&quot;)</span>
+<span class="doccomment">//!         .serve(app)</span>
+<span class="doccomment">//!         .await</span>
+<span class="doccomment">//!         .unwrap();</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! async fn handler(Extension(scheme): Extension&lt;Scheme&gt;) -&gt; String {</span>
+<span class="doccomment">//!     format!(&quot;scheme: {}&quot;, scheme)</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//! ```</span>
 
@@ -821,9 +873,9 @@
 
 <span class="kw">use</span> <span class="ident">http::request::Request</span>;
 <span class="kw">use</span> <span class="ident">http::response::Response</span>;
+<span class="kw">use</span> <span class="ident">http::uri::Scheme</span>;
 <span class="kw">use</span> <span class="ident">http_body::Body</span>;
 
-<span class="kw">use</span> <span class="ident">tower_http::add_extension::AddExtension</span>;
 <span class="kw">use</span> <span class="ident">tower_layer::Layer</span>;
 <span class="kw">use</span> <span class="ident">tower_service::Service</span>;
 
@@ -938,10 +990,10 @@
         <span class="kw">let</span> <span class="ident">acceptor</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tls_loader</span>.<span class="ident">get_acceptor</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="self">self</span>.<span class="ident">custom_serve</span>(
-            <span class="kw">move</span> <span class="op">|</span><span class="ident">handle</span><span class="op">|</span> <span class="ident">HttpServer::from_service</span>(<span class="ident">service</span>.<span class="ident">clone</span>(), <span class="ident">handle</span>),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">handle</span><span class="op">|</span> <span class="ident">HttpServer::from_service</span>(<span class="ident">Scheme::HTTP</span>, <span class="ident">service</span>.<span class="ident">clone</span>(), <span class="ident">handle</span>),
             <span class="kw">move</span> <span class="op">|</span><span class="ident">handle</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="ident">acceptor</span> <span class="op">=</span> <span class="ident">TlsAcceptor::new</span>(<span class="ident">acceptor</span>.<span class="ident">clone</span>());
-                <span class="ident">HttpServer::from_acceptor</span>(<span class="ident">service2</span>.<span class="ident">clone</span>(), <span class="ident">handle</span>, <span class="ident">acceptor</span>)
+                <span class="ident">HttpServer::from_acceptor</span>(<span class="ident">Scheme::HTTPS</span>, <span class="ident">service2</span>.<span class="ident">clone</span>(), <span class="ident">handle</span>, <span class="ident">acceptor</span>)
             },
         )
         .<span class="kw">await</span>
@@ -973,10 +1025,10 @@
         <span class="kw">let</span> <span class="ident">acceptor</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">tls_loader</span>.<span class="ident">get_acceptor</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="self">self</span>.<span class="ident">custom_serve</span>(
-            <span class="kw">move</span> <span class="op">|</span><span class="ident">handle</span><span class="op">|</span> <span class="ident">HttpServer::recording_from_service</span>(<span class="ident">service</span>.<span class="ident">clone</span>(), <span class="ident">handle</span>),
+            <span class="kw">move</span> <span class="op">|</span><span class="ident">handle</span><span class="op">|</span> <span class="ident">HttpServer::recording_from_service</span>(<span class="ident">Scheme::HTTP</span>, <span class="ident">service</span>.<span class="ident">clone</span>(), <span class="ident">handle</span>),
             <span class="kw">move</span> <span class="op">|</span><span class="ident">handle</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="ident">acceptor</span> <span class="op">=</span> <span class="ident">TlsAcceptor::new</span>(<span class="ident">acceptor</span>.<span class="ident">clone</span>());
-                <span class="ident">HttpServer::recording_new</span>(<span class="ident">service2</span>.<span class="ident">clone</span>(), <span class="ident">handle</span>, <span class="ident">acceptor</span>)
+                <span class="ident">HttpServer::recording_new</span>(<span class="ident">Scheme::HTTPS</span>, <span class="ident">service2</span>.<span class="ident">clone</span>(), <span class="ident">handle</span>, <span class="ident">acceptor</span>)
             },
         )
         .<span class="kw">await</span>
@@ -991,16 +1043,14 @@
         <span class="ident">F1</span>: <span class="ident">Fn</span>(<span class="ident">Handle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S1</span>, <span class="ident">M1</span><span class="op">&gt;</span>,
         <span class="ident">S1</span>: <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
         <span class="ident">M1</span>: <span class="ident">MakeParts</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">M1::Layer</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">AddExtension</span><span class="op">&lt;</span><span class="ident">S1</span>, <span class="ident">SocketAddr</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="op">&lt;</span><span class="ident">M1::Layer</span> <span class="kw">as</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">AddExtension</span><span class="op">&lt;</span><span class="ident">S1</span>, <span class="ident">SocketAddr</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Service</span>:
-            <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">M1::Layer</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">S1</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="op">&lt;</span><span class="ident">M1::Layer</span> <span class="kw">as</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">S1</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Service</span>: <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
         <span class="ident">M1::Acceptor</span>: <span class="ident">Accept</span>,
         <span class="ident">F2</span>: <span class="ident">Fn</span>(<span class="ident">Handle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S2</span>, <span class="ident">M2</span><span class="op">&gt;</span>,
         <span class="ident">S2</span>: <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
         <span class="ident">M2</span>: <span class="ident">MakeParts</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">M2::Layer</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">AddExtension</span><span class="op">&lt;</span><span class="ident">S2</span>, <span class="ident">SocketAddr</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="op">&lt;</span><span class="ident">M2::Layer</span> <span class="kw">as</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">AddExtension</span><span class="op">&lt;</span><span class="ident">S2</span>, <span class="ident">SocketAddr</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Service</span>:
-            <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">M2::Layer</span>: <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">S2</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="op">&lt;</span><span class="ident">M2::Layer</span> <span class="kw">as</span> <span class="ident">Layer</span><span class="op">&lt;</span><span class="ident">S2</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Service</span>: <span class="ident">HyperService</span><span class="op">&lt;</span><span class="ident">Request</span><span class="op">&lt;</span><span class="ident">hyper::Body</span><span class="op">&gt;</span><span class="op">&gt;</span>,
         <span class="ident">M2::Acceptor</span>: <span class="ident">Accept</span>,
     {
         <span class="ident">serve</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw-2">mut</span> <span class="ident">fut_list</span><span class="op">|</span> <span class="kw">async</span> <span class="kw">move</span> {
@@ -1073,8 +1123,8 @@
 <span class="doccomment">///</span>
 <span class="doccomment">///     // Must be loaded before passing.</span>
 <span class="doccomment">///     loader</span>
-<span class="doccomment">///         .private_key_file(&quot;certs/key.pem&quot;)</span>
-<span class="doccomment">///         .certificate_file(&quot;certs/cert.pem&quot;)</span>
+<span class="doccomment">///         .private_key_file(&quot;examples/self-signed-certs/key.pem&quot;)</span>
+<span class="doccomment">///         .certificate_file(&quot;examples/self-signed-certs/cert.pem&quot;)</span>
 <span class="doccomment">///         .load()</span>
 <span class="doccomment">///         .await</span>
 <span class="doccomment">///         .unwrap();</span>
@@ -1099,8 +1149,8 @@
 <span class="doccomment">///</span>
 <span class="doccomment">///         // Can overwrite settings and load.</span>
 <span class="doccomment">///         loader</span>
-<span class="doccomment">///             .private_key_file(&quot;certs/private_key.pem&quot;)</span>
-<span class="doccomment">///             .certificate_file(&quot;certs/fullchain.pem&quot;)</span>
+<span class="doccomment">///             .private_key_file(&quot;examples/self-signed-certs/reload/key.pem&quot;)</span>
+<span class="doccomment">///             .certificate_file(&quot;examples/self-signed-certs/reload/cert.pem&quot;)</span>
 <span class="doccomment">///             .load()</span>
 <span class="doccomment">///             .await</span>
 <span class="doccomment">///             .unwrap();</span>

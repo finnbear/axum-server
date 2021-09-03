@@ -314,6 +314,8 @@
 <span id="314">314</span>
 <span id="315">315</span>
 <span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Recording utilities for servers.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [`Recording`](Recording) type can be used to get data usage.</span>
@@ -365,6 +367,8 @@
 
 <span class="kw">use</span> <span class="ident">tokio::io</span>::{<span class="ident">AsyncRead</span>, <span class="ident">AsyncWrite</span>, <span class="ident">ReadBuf</span>};
 
+<span class="kw">use</span> <span class="ident">http::uri::Scheme</span>;
+
 <span class="kw">use</span> <span class="ident">tower_http::add_extension::AddExtension</span>;
 <span class="kw">use</span> <span class="ident">tower_layer::Layer</span>;
 
@@ -398,14 +402,14 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">A</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">MakeRecordingParts</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">recording_new</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>, <span class="ident">acceptor</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">HttpServer::new</span>(<span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">MakeRecordingParts::new</span>(<span class="ident">acceptor</span>))
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">recording_new</span>(<span class="ident">scheme</span>: <span class="ident">Scheme</span>, <span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>, <span class="ident">acceptor</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">HttpServer::new</span>(<span class="ident">scheme</span>, <span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">MakeRecordingParts::new</span>(<span class="ident">acceptor</span>))
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="ident">HttpServer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">MakeRecordingParts</span><span class="op">&lt;</span><span class="ident">NoopAcceptor</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">recording_from_service</span>(<span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">HttpServer::new</span>(<span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">MakeRecordingParts::noop</span>())
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">recording_from_service</span>(<span class="ident">scheme</span>: <span class="ident">Scheme</span>, <span class="ident">service</span>: <span class="ident">S</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">HttpServer::new</span>(<span class="ident">scheme</span>, <span class="ident">service</span>, <span class="ident">handle</span>, <span class="ident">MakeRecordingParts::noop</span>())
     }
 }
 
