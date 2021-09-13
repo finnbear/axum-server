@@ -791,6 +791,12 @@
 <span id="791">791</span>
 <span id="792">792</span>
 <span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Tls implementation for HTTP server.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [`TlsServer`](TlsServer) can be used just like [`Server`](crate::server::Server) to serve apps.</span>
@@ -848,7 +854,8 @@
 <span class="doccomment">//! ```</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server::http_server::HttpServer</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server</span>::{<span class="ident">serve</span>, <span class="ident">serve_addrs</span>, <span class="ident">Accept</span>, <span class="ident">BoxedToSocketAddrs</span>, <span class="ident">Handle</span>, <span class="ident">MakeParts</span>, <span class="ident">Server</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server::socket_addrs</span>::{<span class="self">self</span>, <span class="ident">ToSocketAddrsExt</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::server</span>::{<span class="ident">serve</span>, <span class="ident">serve_addrs</span>, <span class="ident">Accept</span>, <span class="ident">Handle</span>, <span class="ident">MakeParts</span>, <span class="ident">Server</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util::HyperService</span>;
 
@@ -885,7 +892,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TlsServer</span> {
     <span class="ident">server</span>: <span class="ident">Server</span>,
-    <span class="ident">tls_addrs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BoxedToSocketAddrs</span><span class="op">&gt;</span>,
+    <span class="ident">tls_addrs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">socket_addrs::Boxed</span><span class="op">&gt;</span>,
     <span class="ident">tls_loader</span>: <span class="ident">TlsLoader</span>,
 }
 
@@ -896,9 +903,10 @@
     }
 
     <span class="doccomment">/// Bind to a single address or multiple addresses.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
     <span class="kw">where</span>
-        <span class="ident">A</span>: <span class="ident">ToSocketAddrs</span><span class="op">&lt;</span><span class="ident">Iter</span> <span class="op">=</span> <span class="ident">std::vec::IntoIter</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">A</span>: <span class="ident">ToSocketAddrs</span><span class="op">&lt;</span><span class="ident">Iter</span> <span class="op">=</span> <span class="ident">I</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">SocketAddr</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
         <span class="self">self</span>.<span class="ident">server</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">server</span>.<span class="ident">bind</span>(<span class="ident">addr</span>);
         <span class="self">self</span>
@@ -914,11 +922,15 @@
     <span class="doccomment">/// Bind to a single address or multiple addresses. Using tls protocol on streams.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Certificate and private key must be set before or after calling this.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind_rustls</span><span class="op">&lt;</span><span class="ident">A</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bind_rustls</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">A</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
     <span class="kw">where</span>
-        <span class="ident">A</span>: <span class="ident">ToSocketAddrs</span><span class="op">&lt;</span><span class="ident">Iter</span> <span class="op">=</span> <span class="ident">std::vec::IntoIter</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">A</span>: <span class="ident">ToSocketAddrs</span><span class="op">&lt;</span><span class="ident">Iter</span> <span class="op">=</span> <span class="ident">I</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">SocketAddr</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
-        <span class="self">self</span>.<span class="ident">tls_addrs</span>.<span class="ident">push</span>(<span class="ident">Box::new</span>(<span class="ident">addr</span>));
+        <span class="self">self</span>.<span class="ident">tls_addrs</span>.<span class="ident">push</span>(<span class="ident">Box::new</span>(<span class="ident">addr</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">iter</span><span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">box_iter</span>: <span class="ident">socket_addrs::BoxedIterator</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="ident">iter</span>);
+            <span class="ident">box_iter</span>
+        })));
         <span class="self">self</span>
     }
 
