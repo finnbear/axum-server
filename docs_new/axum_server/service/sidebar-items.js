@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["MakeServiceRef","Modified version of `MakeService` that has some trait bounds and takes a `&Target`."]]});

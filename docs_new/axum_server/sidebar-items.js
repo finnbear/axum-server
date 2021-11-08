@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["bind","Create a [`Server`] that will bind to provided address."],["bind_rustls","Create a [`RustlsServer`] that will bind to provided address."]],"mod":[["service","Service traits."],["tls_rustls","Tls implementation using [`rustls`]"]],"struct":[["Handle","A handle for `Server`."],["Server","HTTP server."]]});
