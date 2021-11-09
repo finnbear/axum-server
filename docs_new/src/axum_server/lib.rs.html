@@ -42,6 +42,8 @@
 <span id="42">42</span>
 <span id="43">43</span>
 <span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
 </pre><pre class="rust"><code><span class="doccomment">//! axum-server is a [hyper] server implementation designed to be used with [axum] framework.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! [hyper]: https://crates.io/crates/hyper</span>
@@ -73,6 +75,7 @@
 <span class="kw">mod</span> <span class="ident">notify_once</span>;
 <span class="kw">mod</span> <span class="ident">server</span>;
 
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">accept</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">service</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::{
@@ -81,11 +84,12 @@
 };
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">tls_rustls</span>;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">inline</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::tls_rustls::bind_rustls</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::tls_rustls::export::bind_rustls</span>;
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="axum_server" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
