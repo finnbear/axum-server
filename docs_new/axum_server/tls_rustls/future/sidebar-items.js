@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["RustlsAcceptorFuture","Future type for `RustlsAcceptor`."]]});

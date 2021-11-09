@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["bind_rustls","Create a tls server that will bind to provided address."]],"struct":[["RustlsAcceptor","Tls acceptor using rustls."],["RustlsConfig","Rustls configuration."]]});
+initSidebarItems({"fn":[["bind_rustls","Create a tls server that will bind to provided address."]],"mod":[["future","Future types."]],"struct":[["RustlsAcceptor","Tls acceptor using rustls."],["RustlsConfig","Rustls configuration."]]});
