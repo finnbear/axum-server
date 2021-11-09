@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../axum_server/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../axum_server/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -106,160 +106,114 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
-<span id="115">115</span>
-<span id="116">116</span>
-<span id="117">117</span>
-<span id="118">118</span>
-<span id="119">119</span>
-<span id="120">120</span>
-<span id="121">121</span>
-<span id="122">122</span>
-<span id="123">123</span>
-<span id="124">124</span>
-<span id="125">125</span>
-<span id="126">126</span>
-<span id="127">127</span>
-<span id="128">128</span>
-<span id="129">129</span>
-<span id="130">130</span>
-<span id="131">131</span>
-</pre><pre class="rust"><code><span class="doccomment">//! axum-server is a [`hyper`] server implementation designed to be used with [`axum`] framework.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! axum-server is a [hyper] server implementation designed to be used with [axum] framework.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Features</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! - Conveniently bind to any number of addresses.</span>
-<span class="doccomment">//! - Tls support through [`rustls`]. Only `pem` format is supported.</span>
-<span class="doccomment">//! - Reload tls while server is running.</span>
-<span class="doccomment">//! - Access to client ip address from services/handlers.</span>
-<span class="doccomment">//! - Record incoming and outgoing bytes for each connection.</span>
-<span class="doccomment">//! - Services created by [`axum`] can directly be served.</span>
-<span class="doccomment">//! - Although designed to be used with [`axum`], any `Service` that implements `Clone` can be served.</span>
+<span class="doccomment">//! - HTTP/1 and HTTP/2</span>
+<span class="doccomment">//! - HTTPS through [rustls].</span>
+<span class="doccomment">//! - High performance through [hyper].</span>
+<span class="doccomment">//! - Using [tower] make service API.</span>
+<span class="doccomment">//! - Very good [axum] compatibility. Likely to work with future [axum] releases.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Guide</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! [`Server`](Server) can be created using [`Server::new`](Server::new) or [`bind`](bind), pick</span>
-<span class="doccomment">//! whichever you are comfortable with.</span>
+<span class="doccomment">//! axum-server can [`serve`] items that implement [`MakeService`] with some additional [trait</span>
+<span class="doccomment">//! bounds](crate::service::MakeServiceRef). Make services that are [created] using [`axum`]</span>
+<span class="doccomment">//! complies with those trait bounds out of the box. Therefore it is more convenient to use this</span>
+<span class="doccomment">//! crate with [`axum`].</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! To serve an app, server must at least bind to an `address:port`. Anything that implements</span>
-<span class="doccomment">//! [`ToSocketAddrs`] can be used with [`bind`](Server::bind) function for example `&quot;127.0.0.1:3000&quot;`.</span>
-<span class="doccomment">//! After binding at least to one address, a [`Service`](tower_service::Service) that implements</span>
-<span class="doccomment">//! [`Clone`](Clone) can be provided to [`Server::serve`](Server::serve) method which can then be `.await`ed</span>
-<span class="doccomment">//! to run the server. This means all [`axum`] services can be served.</span>
+<span class="doccomment">//! All examples in this crate uses [`axum`]. If you want to use this crate without [`axum`] it is</span>
+<span class="doccomment">//! highly recommended to learn how [tower] works.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! In [`Request`](http::request::Request::extensions) extensions, [`SocketAddr`](std::net::SocketAddr) type</span>
-<span class="doccomment">//! can be used to get client ip address.</span>
+<span class="doccomment">//! [`Server::bind`] or [`bind`] function can be called to create a server that will bind to</span>
+<span class="doccomment">//! provided [`SocketAddr`] when [`serve`] is called.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! When `tls-rustls` feature is enabled, [`Server`](Server) can be turned into a</span>
-<span class="doccomment">//! [`TlsServer`](tls::TlsServer) by calling methods about tls. Addresses defined using</span>
-<span class="doccomment">//! [`bind`](tls::TlsServer::bind) will be served with HTTP protocol and addresses defined using</span>
-<span class="doccomment">//! [`bind_rustls`](tls::TlsServer::bind_rustls) with HTTPS protocol.</span>
+<span class="doccomment">//! A [`Handle`] can be passed to [`Server`](Server::handle) for additional utilities like shutdown</span>
+<span class="doccomment">//! and graceful shutdown.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! When `record` feature is enabled, [`serve_and_record`](Server::serve_and_record) method can be</span>
-<span class="doccomment">//! used to record incoming and outgoing bytes. See [module](record) page for getting recorded bytes.</span>
+<span class="doccomment">//! [`bind_rustls`] can be called by providing [`RustlsConfig`] to create a HTTPS [`Server`] that</span>
+<span class="doccomment">//! will bind on provided [`SocketAddr`]. [`RustlsConfig`] can be cloned, reload methods can be</span>
+<span class="doccomment">//! used on clone to reload tls configuration.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! # Examples</span>
+<span class="doccomment">//! # Example</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! ## Hello World</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! [`axum`] &quot;Hello, World!&quot; example can be run like:</span>
+<span class="doccomment">//! A simple hello world application can be served like:</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```rust,no_run</span>
-<span class="doccomment">//! use axum::{</span>
-<span class="doccomment">//!     handler::get,</span>
-<span class="doccomment">//!     Router,</span>
-<span class="doccomment">//! };</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! #[tokio::main]</span>
-<span class="doccomment">//! async fn main() {</span>
-<span class="doccomment">//!     let app = Router::new().route(&quot;/&quot;, get(|| async { &quot;Hello, World!&quot; }));</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//!     axum_server::bind(&quot;127.0.0.1:3000&quot;)</span>
-<span class="doccomment">//!         .serve(app)</span>
-<span class="doccomment">//!         .await</span>
-<span class="doccomment">//!         .unwrap();</span>
-<span class="doccomment">//! }</span>
-<span class="doccomment">//! ```</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ## Remote Address</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ```rust,no_run</span>
-<span class="doccomment">//! use axum::{extract::Extension, handler::get, Router};</span>
+<span class="doccomment">//! use axum::{routing::get, Router};</span>
 <span class="doccomment">//! use std::net::SocketAddr;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! #[tokio::main]</span>
 <span class="doccomment">//! async fn main() {</span>
-<span class="doccomment">//!     let app = Router::new().route(&quot;/&quot;, get(handler));</span>
+<span class="doccomment">//!     let app = Router::new().route(&quot;/&quot;, get(|| async { &quot;Hello, world!&quot; }));</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//!     axum_server::bind(&quot;127.0.0.1:3000&quot;)</span>
-<span class="doccomment">//!         .serve(app)</span>
+<span class="doccomment">//!     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));</span>
+<span class="doccomment">//!     println!(&quot;listening on {}&quot;, addr);</span>
+<span class="doccomment">//!     axum_server::bind(addr)</span>
+<span class="doccomment">//!         .serve(app.into_make_service())</span>
 <span class="doccomment">//!         .await</span>
 <span class="doccomment">//!         .unwrap();</span>
 <span class="doccomment">//! }</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! async fn handler(Extension(addr): Extension&lt;SocketAddr&gt;) -&gt; String {</span>
-<span class="doccomment">//!     format!(&quot;addr: {}&quot;, addr)</span>
-<span class="doccomment">//! }</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! [`axum`]: https://crates.io/crates/axum</span>
-<span class="doccomment">//! [`hyper`]: hyper</span>
-<span class="doccomment">//! [`rustls`]: tokio_rustls::rustls</span>
-<span class="doccomment">//! [`ToSocketAddrs`]: https://doc.rust-lang.org/stable/std/net/trait.ToSocketAddrs.html#implementors</span>
+<span class="doccomment">//! You can find more examples in [repository].</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! [axum]: https://crates.io/crates/axum</span>
+<span class="doccomment">//! [bind]: crate::bind</span>
+<span class="doccomment">//! [bind_rustls]: crate::bind_rustls</span>
+<span class="doccomment">//! [created]: https://docs.rs/axum/0.3/axum/struct.Router.html#method.into_make_service</span>
+<span class="doccomment">//! [hyper]: https://crates.io/crates/hyper</span>
+<span class="doccomment">//! [repository]: https://github.com/programatik29/axum-server/tree/master/examples</span>
+<span class="doccomment">//! [rustls]: https://crates.io/crates/rustls</span>
+<span class="doccomment">//! [tower]: https://crates.io/crates/tower</span>
+<span class="doccomment">//! [`axum`]: https://docs.rs/axum/0.3</span>
+<span class="doccomment">//! [`serve`]: crate::server::Server::serve</span>
+<span class="doccomment">//! [`MakeService`]: https://docs.rs/tower/0.4/tower/make/trait.MakeService.html</span>
+<span class="doccomment">//! [`RustlsConfig`]: crate::tls_rustls::RustlsConfig</span>
+<span class="doccomment">//! [`SocketAddr`]: std::net::SocketAddr</span>
 
+<span class="attribute">#![<span class="ident">forbid</span>(<span class="ident">unsafe_code</span>)]</span>
 <span class="attribute">#![<span class="ident">warn</span>(
-    <span class="ident">clippy::all</span>,
+    <span class="ident">clippy::await_holding_lock</span>,
+    <span class="ident">clippy::cargo_common_metadata</span>,
     <span class="ident">clippy::dbg_macro</span>,
-    <span class="ident">clippy::todo</span>,
+    <span class="ident">clippy::doc_markdown</span>,
     <span class="ident">clippy::empty_enum</span>,
     <span class="ident">clippy::enum_glob_use</span>,
-    <span class="ident">clippy::mem_forget</span>,
-    <span class="ident">clippy::unused_self</span>,
-    <span class="ident">clippy::filter_map_next</span>,
-    <span class="ident">clippy::needless_continue</span>,
-    <span class="ident">clippy::needless_borrow</span>,
-    <span class="ident">clippy::match_wildcard_for_single_variants</span>,
-    <span class="ident">clippy::if_let_mutex</span>,
-    <span class="ident">clippy::mismatched_target_os</span>,
-    <span class="ident">clippy::await_holding_lock</span>,
-    <span class="ident">clippy::match_on_vec_items</span>,
-    <span class="ident">clippy::imprecise_flops</span>,
-    <span class="ident">clippy::suboptimal_flops</span>,
-    <span class="ident">clippy::lossy_float_literal</span>,
-    <span class="ident">clippy::rest_pat_in_fully_bound_structs</span>,
-    <span class="ident">clippy::fn_params_excessive_bools</span>,
-    <span class="ident">clippy::exit</span>,
     <span class="ident">clippy::inefficient_to_string</span>,
-    <span class="ident">clippy::linkedlist</span>,
-    <span class="ident">clippy::macro_use_imports</span>,
-    <span class="ident">clippy::option_option</span>,
-    <span class="ident">clippy::verbose_file_reads</span>,
-    <span class="ident">clippy::unnested_or_patterns</span>,
-    <span class="ident">rust_2018_idioms</span>,
+    <span class="ident">clippy::mem_forget</span>,
+    <span class="ident">clippy::mutex_integer</span>,
+    <span class="ident">clippy::needless_continue</span>,
+    <span class="ident">clippy::todo</span>,
+    <span class="ident">clippy::unimplemented</span>,
+    <span class="ident">clippy::wildcard_imports</span>,
     <span class="ident">future_incompatible</span>,
-    <span class="ident">nonstandard_style</span>,
+    <span class="ident">missing_docs</span>,
     <span class="ident">missing_debug_implementations</span>,
-    <span class="ident">missing_docs</span>
+    <span class="ident">unreachable_pub</span>
 )]</span>
-<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">unreachable_pub</span>, <span class="ident">private_in_public</span>)]</span>
-<span class="attribute">#![<span class="ident">forbid</span>(<span class="ident">unsafe_code</span>)]</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
 
+<span class="kw">mod</span> <span class="ident">handle</span>;
+<span class="kw">mod</span> <span class="ident">notify_once</span>;
 <span class="kw">mod</span> <span class="ident">server</span>;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">util</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">server</span>::{<span class="ident">bind</span>, <span class="ident">Handle</span>, <span class="ident">Server</span>};
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">accept</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">service</span>;
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::{
+    <span class="ident">handle::Handle</span>,
+    <span class="ident">server</span>::{<span class="ident">bind</span>, <span class="ident">Server</span>},
+};
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">server</span>::{<span class="ident">bind_rustls</span>, <span class="ident">tls</span>};
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)))]</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">tls_rustls</span>;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;record&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">server::record</span>;
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">inline</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tls-rustls&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::tls_rustls::export::bind_rustls</span>;
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="axum_server" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>

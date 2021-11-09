@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["TlsLoader","A struct that can be passed to `TlsServer` to reload tls configuration."],["TlsServer","Configurable HTTP and HTTPS server, supporting HTTP/1.1 and HTTP2."]]});

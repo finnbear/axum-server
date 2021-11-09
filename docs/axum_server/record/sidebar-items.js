@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Recording","Type to access data that is being recorded in real-time."]]});

@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["axum_server"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/convert/trait.From.html\" title=\"trait core::convert::From\">From</a>&lt;<a class=\"struct\" href=\"axum_server/struct.Server.html\" title=\"struct axum_server::Server\">Server</a>&gt; for <a class=\"struct\" href=\"axum_server/tls/struct.TlsServer.html\" title=\"struct axum_server::tls::TlsServer\">TlsServer</a>","synthetic":false,"types":["axum_server::server::tls::TlsServer"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
