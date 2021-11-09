@@ -490,8 +490,6 @@
 <span id="490">490</span>
 <span id="491">491</span>
 <span id="492">492</span>
-<span id="493">493</span>
-<span id="494">494</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Tls implementation using [`rustls`]</span>
 
 <span class="kw">use</span> <span class="ident"><span class="self">self</span>::future::RustlsAcceptorFuture</span>;
@@ -500,7 +498,6 @@
     <span class="ident">server</span>::{<span class="ident">io_other</span>, <span class="ident">Server</span>},
 };
 <span class="kw">use</span> <span class="ident">arc_swap::ArcSwap</span>;
-<span class="kw">use</span> <span class="ident">http::uri::Scheme</span>;
 <span class="kw">use</span> <span class="ident">rustls</span>::{<span class="ident">Certificate</span>, <span class="ident">PrivateKey</span>, <span class="ident">ServerConfig</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt</span>, <span class="ident">io</span>, <span class="ident">net::SocketAddr</span>, <span class="ident">path::Path</span>, <span class="ident">sync::Arc</span>};
 <span class="kw">use</span> <span class="ident">tokio</span>::{
@@ -508,7 +505,6 @@
     <span class="ident">task::spawn_blocking</span>,
 };
 <span class="kw">use</span> <span class="ident">tokio_rustls::server::TlsStream</span>;
-<span class="kw">use</span> <span class="ident">tower_http::add_extension::AddExtension</span>;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">export</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
@@ -561,7 +557,7 @@
     <span class="ident">A::Stream</span>: <span class="ident">AsyncRead</span> <span class="op">+</span> <span class="ident">AsyncWrite</span> <span class="op">+</span> <span class="ident">Unpin</span>,
 {
     <span class="kw">type</span> <span class="ident">Stream</span> <span class="op">=</span> <span class="ident">TlsStream</span><span class="op">&lt;</span><span class="ident">A::Stream</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Service</span> <span class="op">=</span> <span class="ident">AddExtension</span><span class="op">&lt;</span><span class="ident">A::Service</span>, <span class="ident">Scheme</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">Service</span> <span class="op">=</span> <span class="ident">A::Service</span>;
     <span class="kw">type</span> <span class="ident">Future</span> <span class="op">=</span> <span class="ident">RustlsAcceptorFuture</span><span class="op">&lt;</span><span class="ident">A::Future</span>, <span class="ident">A::Stream</span>, <span class="ident">A::Service</span><span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">accept</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">stream</span>: <span class="ident">I</span>, <span class="ident">service</span>: <span class="ident">S</span>) -&gt; <span class="ident"><span class="self">Self</span>::Future</span> {
