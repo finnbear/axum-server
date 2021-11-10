@@ -7,7 +7,115 @@
 <p>Certificate and private key must be in PEM format.</p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.from_pem_file" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#155-160" title="goto source code">[src]</a></div><a href="#method.from_pem_file" class="anchor"></a><h4 class="code-header">pub async fn <a href="#method.from_pem_file" class="fnname">from_pem_file</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;cert: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;key: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;<br>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;Self&gt;</h4></div></summary><div class="docblock"><p>Create config from PEM formatted files.</p>
 <p>Contents of certificate file and private key file must be in PEM format.</p>
-</div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.get_inner" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#163-165" title="goto source code">[src]</a></div><a href="#method.get_inner" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.get_inner" class="fnname">get_inner</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;<a class="struct" href="https://docs.rs/rustls/0.20.0/rustls/server/server_conn/struct.ServerConfig.html" title="struct rustls::server::server_conn::ServerConfig">ServerConfig</a>&gt;</h4></div></summary><div class="docblock"><p>Get  inner <code>Arc&lt;</code><a href="https://docs.rs/rustls/0.20.0/rustls/server/server_conn/struct.ServerConfig.html" title="ServerConfig"><code>ServerConfig</code></a><code>&gt;</code>.</p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples" class="section-header"><a href="#scraped-examples">Examples found in repository</a></h5><div class="scraped-example " data-locs="[[[3,6],&quot;../../src/rustls_server/rustls_server.rs.html#13-16&quot;,&quot;lines 13-16&quot;]]"><div class="scraped-example-title">examples/rustls_server.rs (<a href="../../src/rustls_server/rustls_server.rs.html#13-16">lines 13-16</a>)</div><div class="code-wrapper"><span class="expand">&varr;</span><div class="example-wrap"><pre class="line-numbers"><span>10</span>
+<span>11</span>
+<span>12</span>
+<span>13</span>
+<span>14</span>
+<span>15</span>
+<span>16</span>
+<span>17</span>
+<span>18</span>
+<span>19</span>
+<span>20</span>
+<span>21</span>
+<span>22</span>
+<span>23</span>
+<span>24</span>
+<span>25</span>
+<span>26</span>
+</pre><pre class="rust"><code><span class="kw">fn</span> <span class="ident">main</span>() {
+    <span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="ident">Router::new</span>().<span class="ident">route</span>(<span class="string">&quot;/&quot;</span>, <span class="ident">get</span>(<span class="op">|</span><span class="op">|</span> <span class="kw">async</span> { <span class="string">&quot;Hello, world!&quot;</span> }));
+
+    <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="highlight focus"><span class="ident">RustlsConfig::from_pem_file</span>(
+        <span class="string">&quot;examples/self-signed-certs/cert.pem&quot;</span>,
+        <span class="string">&quot;examples/self-signed-certs/key.pem&quot;</span>,
+    )</span>
+    .<span class="kw">await</span>
+    .<span class="ident">unwrap</span>();
+
+    <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">SocketAddr::from</span>(([<span class="number">127</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>], <span class="number">3000</span>));
+    <span class="macro">println!</span>(<span class="string">&quot;listening on {}&quot;</span>, <span class="ident">addr</span>);
+    <span class="ident">axum_server::bind_rustls</span>(<span class="ident">addr</span>, <span class="ident">config</span>)
+        .<span class="ident">serve</span>(<span class="ident">app</span>.<span class="ident">into_make_service</span>())
+        .<span class="kw">await</span>
+        .<span class="ident">unwrap</span>();
+}</code></pre></div>
+</div></div><details class="rustdoc-toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="more-scraped-examples-inner"><div class="scraped-example " data-locs="[[[3,6],&quot;../../src/http_and_https/http_and_https.rs.html#41-44&quot;,&quot;lines 41-44&quot;]]"><div class="scraped-example-title">examples/http_and_https.rs (<a href="../../src/http_and_https/http_and_https.rs.html#41-44">lines 41-44</a>)</div><div class="code-wrapper"><span class="expand">&varr;</span><div class="example-wrap"><pre class="line-numbers"><span>38</span>
+<span>39</span>
+<span>40</span>
+<span>41</span>
+<span>42</span>
+<span>43</span>
+<span>44</span>
+<span>45</span>
+<span>46</span>
+<span>47</span>
+<span>48</span>
+<span>49</span>
+<span>50</span>
+<span>51</span>
+<span>52</span>
+<span>53</span>
+<span>54</span>
+</pre><pre class="rust"><code><span class="kw">async</span> <span class="kw">fn</span> <span class="ident">https_server</span>() {
+    <span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="ident">Router::new</span>().<span class="ident">route</span>(<span class="string">&quot;/&quot;</span>, <span class="ident">get</span>(<span class="op">|</span><span class="op">|</span> <span class="kw">async</span> { <span class="string">&quot;Hello, world!&quot;</span> }));
+
+    <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="highlight focus"><span class="ident">RustlsConfig::from_pem_file</span>(
+        <span class="string">&quot;examples/self-signed-certs/cert.pem&quot;</span>,
+        <span class="string">&quot;examples/self-signed-certs/key.pem&quot;</span>,
+    )</span>
+    .<span class="kw">await</span>
+    .<span class="ident">unwrap</span>();
+
+    <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">SocketAddr::from</span>(([<span class="number">127</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>], <span class="number">3443</span>));
+    <span class="macro">println!</span>(<span class="string">&quot;https listening on {}&quot;</span>, <span class="ident">addr</span>);
+    <span class="ident">axum_server::bind_rustls</span>(<span class="ident">addr</span>, <span class="ident">config</span>)
+        .<span class="ident">serve</span>(<span class="ident">app</span>.<span class="ident">into_make_service</span>())
+        .<span class="kw">await</span>
+        .<span class="ident">unwrap</span>();
+}</code></pre></div>
+</div></div><div class="scraped-example " data-locs="[[[3,6],&quot;../../src/rustls_reload/rustls_reload.rs.html#18-21&quot;,&quot;lines 18-21&quot;]]"><div class="scraped-example-title">examples/rustls_reload.rs (<a href="../../src/rustls_reload/rustls_reload.rs.html#18-21">lines 18-21</a>)</div><div class="code-wrapper"><span class="expand">&varr;</span><div class="example-wrap"><pre class="line-numbers"><span>15</span>
+<span>16</span>
+<span>17</span>
+<span>18</span>
+<span>19</span>
+<span>20</span>
+<span>21</span>
+<span>22</span>
+<span>23</span>
+<span>24</span>
+<span>25</span>
+<span>26</span>
+<span>27</span>
+<span>28</span>
+<span>29</span>
+<span>30</span>
+<span>31</span>
+<span>32</span>
+<span>33</span>
+<span>34</span>
+</pre><pre class="rust"><code><span class="kw">fn</span> <span class="ident">main</span>() {
+    <span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="ident">Router::new</span>().<span class="ident">route</span>(<span class="string">&quot;/&quot;</span>, <span class="ident">get</span>(<span class="op">|</span><span class="op">|</span> <span class="kw">async</span> { <span class="string">&quot;Hello, world!&quot;</span> }));
+
+    <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="highlight focus"><span class="ident">RustlsConfig::from_pem_file</span>(
+        <span class="string">&quot;examples/self-signed-certs/cert.pem&quot;</span>,
+        <span class="string">&quot;examples/self-signed-certs/key.pem&quot;</span>,
+    )</span>
+    .<span class="kw">await</span>
+    .<span class="ident">unwrap</span>();
+
+    <span class="comment">// Spawn a task to reload tls.</span>
+    <span class="ident">tokio::spawn</span>(<span class="ident">reload</span>(<span class="ident">config</span>.<span class="ident">clone</span>()));
+
+    <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">SocketAddr::from</span>(([<span class="number">127</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>], <span class="number">3000</span>));
+    <span class="macro">println!</span>(<span class="string">&quot;listening on {}&quot;</span>, <span class="ident">addr</span>);
+    <span class="ident">axum_server::bind_rustls</span>(<span class="ident">addr</span>, <span class="ident">config</span>)
+        .<span class="ident">serve</span>(<span class="ident">app</span>.<span class="ident">into_make_service</span>())
+        .<span class="kw">await</span>
+        .<span class="ident">unwrap</span>();
+}</code></pre></div>
+</div></div></div></div></details></div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.get_inner" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#163-165" title="goto source code">[src]</a></div><a href="#method.get_inner" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.get_inner" class="fnname">get_inner</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;<a class="struct" href="https://docs.rs/rustls/0.20.0/rustls/server/server_conn/struct.ServerConfig.html" title="struct rustls::server::server_conn::ServerConfig">ServerConfig</a>&gt;</h4></div></summary><div class="docblock"><p>Get  inner <code>Arc&lt;</code><a href="https://docs.rs/rustls/0.20.0/rustls/server/server_conn/struct.ServerConfig.html" title="ServerConfig"><code>ServerConfig</code></a><code>&gt;</code>.</p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.reload_from_config" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#168-170" title="goto source code">[src]</a></div><a href="#method.reload_from_config" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.reload_from_config" class="fnname">reload_from_config</a>(&amp;self, config: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;<a class="struct" href="https://docs.rs/rustls/0.20.0/rustls/server/server_conn/struct.ServerConfig.html" title="struct rustls::server::server_conn::ServerConfig">ServerConfig</a>&gt;)</h4></div></summary><div class="docblock"><p>Reload config from <code>Arc&lt;</code><a href="https://docs.rs/rustls/0.20.0/rustls/server/server_conn/struct.ServerConfig.html" title="ServerConfig"><code>ServerConfig</code></a><code>&gt;</code>.</p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.reload_from_der" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#177-186" title="goto source code">[src]</a></div><a href="#method.reload_from_der" class="anchor"></a><h4 class="code-header">pub async fn <a href="#method.reload_from_der" class="fnname">reload_from_der</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;self, <br>&nbsp;&nbsp;&nbsp;&nbsp;cert: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;key: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;<br>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</h4></div></summary><div class="docblock"><p>Reload config from DER-encoded data.</p>
 <p>The certificate must be DER-encoded X.509.</p>
@@ -16,8 +124,42 @@
 <p>Certificate and private key must be in PEM format.</p>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.reload_from_pem_file" class="method has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#205-216" title="goto source code">[src]</a></div><a href="#method.reload_from_pem_file" class="anchor"></a><h4 class="code-header">pub async fn <a href="#method.reload_from_pem_file" class="fnname">reload_from_pem_file</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;self, <br>&nbsp;&nbsp;&nbsp;&nbsp;cert: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;key: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;<br>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</h4></div></summary><div class="docblock"><p>Reload config from PEM formatted files.</p>
 <p>Contents of certificate file and private key file must be in PEM format.</p>
-</div></details></div></details><h2 id="trait-implementations" class="small-section-header">Trait Implementations<a href="#trait-implementations" class="anchor"></a></h2><div id="trait-implementations-list"><details class="rustdoc-toggle implementors-toggle" open><summary><div id="impl-Clone" class="impl has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#113" title="goto source code">[src]</a></div><a href="#impl-Clone" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h3></div></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><div id="method.clone" class="method trait-impl has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#113" title="goto source code">[src]</a></div><a href="#method.clone" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fnname">clone</a>(&amp;self) -&gt; <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h4></div></summary><div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
-</div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.clone_from" class="method trait-impl has-srclink"><div class="rightside"><span class="since" title="Stable since Rust version 1.0.0">1.0.0</span><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#131" title="goto source code">[src]</a></div><a href="#method.clone_from" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fnname">clone_from</a>(&amp;mut self, source: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>Self)</h4></div></summary><div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1" class="section-header"><a href="#scraped-examples-1">Examples found in repository</a></h5><div class="scraped-example " data-locs="[[[8,11],&quot;../../src/rustls_reload/rustls_reload.rs.html#44-47&quot;,&quot;lines 44-47&quot;]]"><div class="scraped-example-title">examples/rustls_reload.rs (<a href="../../src/rustls_reload/rustls_reload.rs.html#44-47">lines 44-47</a>)</div><div class="code-wrapper"><span class="expand">&varr;</span><div class="example-wrap"><pre class="line-numbers"><span>36</span>
+<span>37</span>
+<span>38</span>
+<span>39</span>
+<span>40</span>
+<span>41</span>
+<span>42</span>
+<span>43</span>
+<span>44</span>
+<span>45</span>
+<span>46</span>
+<span>47</span>
+<span>48</span>
+<span>49</span>
+<span>50</span>
+<span>51</span>
+<span>52</span>
+</pre><pre class="rust"><code><span class="kw">async</span> <span class="kw">fn</span> <span class="ident">reload</span>(<span class="ident">config</span>: <span class="ident">RustlsConfig</span>) {
+    <span class="comment">// Wait for 20 seconds.</span>
+    <span class="ident">sleep</span>(<span class="ident">Duration::from_secs</span>(<span class="number">20</span>)).<span class="kw">await</span>;
+
+    <span class="macro">println!</span>(<span class="string">&quot;reloading rustls configuration&quot;</span>);
+
+    <span class="comment">// Reload rustls configuration from new files.</span>
+    <span class="ident">config</span>
+        .<span class="highlight focus"><span class="ident">reload_from_pem_file</span>(
+            <span class="string">&quot;examples/self-signed-certs/reload/cert.pem&quot;</span>,
+            <span class="string">&quot;examples/self-signed-certs/reload/key.pem&quot;</span>,
+        )</span>
+        .<span class="kw">await</span>
+        .<span class="ident">unwrap</span>();
+
+    <span class="macro">println!</span>(<span class="string">&quot;rustls configuration reloaded&quot;</span>);
+}</code></pre></div>
+</div></div></div></details></div></details><h2 id="trait-implementations" class="small-section-header">Trait Implementations<a href="#trait-implementations" class="anchor"></a></h2><div id="trait-implementations-list"><details class="rustdoc-toggle implementors-toggle" open><summary><div id="impl-Clone" class="impl has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#113" title="goto source code">[src]</a></div><a href="#impl-Clone" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h3></div></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><div id="method.clone" class="method trait-impl has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#113" title="goto source code">[src]</a></div><a href="#method.clone" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fnname">clone</a>(&amp;self) -&gt; <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h4></div></summary><div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.clone_from" class="method trait-impl has-srclink"><div class="rightside"><span class="since" title="Stable since Rust version 1.0.0">1.0.0</span><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#130" title="goto source code">[src]</a></div><a href="#method.clone_from" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fnname">clone_from</a>(&amp;mut self, source: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>Self)</h4></div></summary><div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
 </div></details></div></details><details class="rustdoc-toggle implementors-toggle" open><summary><div id="impl-Debug" class="impl has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#219-223" title="goto source code">[src]</a></div><a href="#impl-Debug" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h3></div></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><div id="method.fmt" class="method trait-impl has-srclink"><div class="rightside"><a class="srclink" href="../../src/axum_server/tls_rustls/mod.rs.html#220-222" title="goto source code">[src]</a></div><a href="#method.fmt" class="anchor"></a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt" class="fnname">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></div></summary><div class='docblock'><p>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></p>
 </div></details></div></details></div><h2 id="synthetic-implementations" class="small-section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor"></a></h2><div id="synthetic-implementations-list"><div id="impl-RefUnwindSafe" class="impl has-srclink"><div class="rightside"></div><a href="#impl-RefUnwindSafe" class="anchor"></a><h3 class="code-header in-band">impl !<a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h3></div><div id="impl-Send" class="impl has-srclink"><div class="rightside"></div><a href="#impl-Send" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h3></div><div id="impl-Sync" class="impl has-srclink"><div class="rightside"></div><a href="#impl-Sync" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h3></div><div id="impl-Unpin" class="impl has-srclink"><div class="rightside"></div><a href="#impl-Unpin" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h3></div><div id="impl-UnwindSafe" class="impl has-srclink"><div class="rightside"></div><a href="#impl-UnwindSafe" class="anchor"></a><h3 class="code-header in-band">impl !<a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="struct" href="struct.RustlsConfig.html" title="struct axum_server::tls_rustls::RustlsConfig">RustlsConfig</a></h3></div></div><h2 id="blanket-implementations" class="small-section-header">Blanket Implementations<a href="#blanket-implementations" class="anchor"></a></h2><div id="blanket-implementations-list"><details class="rustdoc-toggle implementors-toggle" open><summary><div id="impl-Any" class="impl has-srclink"><div class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#132-136" title="goto source code">[src]</a></div><a href="#impl-Any" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html" title="trait core::any::Any">Any</a> for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: 'static + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span></h3></div></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><div id="method.type_id" class="method trait-impl has-srclink"><div class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#133" title="goto source code">[src]</a></div><a href="#method.type_id" class="anchor"></a><h4 class="code-header">pub fn <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id" class="fnname">type_id</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/any/struct.TypeId.html" title="struct core::any::TypeId">TypeId</a></h4></div></summary><div class='docblock'><p>Gets the <code>TypeId</code> of <code>self</code>. <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id">Read more</a></p>
 </div></details></div></details><details class="rustdoc-toggle implementors-toggle" open><summary><div id="impl-Borrow%3CT%3E" class="impl has-srclink"><div class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#208-213" title="goto source code">[src]</a></div><a href="#impl-Borrow%3CT%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html" title="trait core::borrow::Borrow">Borrow</a>&lt;T&gt; for T <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span></h3></div></summary><div class="impl-items"><details class="rustdoc-toggle method-toggle" open><summary><div id="method.borrow" class="method trait-impl has-srclink"><div class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#210" title="goto source code">[src]</a></div><a href="#method.borrow" class="anchor"></a><h4 class="code-header">pub fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow" class="fnname">borrow</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>T</h4></div></summary><div class='docblock'><p>Immutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow">Read more</a></p>
@@ -41,5 +183,5 @@
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.with_current_subscriber" class="method trait-impl has-srclink"><div class="rightside"><a class="srclink" href="https://docs.rs/tracing/0.1.29/src/tracing/instrument.rs.html#221" title="goto source code">[src]</a></div><a href="#method.with_current_subscriber" class="anchor"></a><h4 class="code-header">fn <a href="https://docs.rs/tracing/0.1.29/tracing/instrument/trait.WithSubscriber.html#method.with_current_subscriber" class="fnname">with_current_subscriber</a>(self) -&gt; <a class="struct" href="https://docs.rs/tracing/0.1.29/tracing/instrument/struct.WithDispatch.html" title="struct tracing::instrument::WithDispatch">WithDispatch</a>&lt;Self&gt;</h4></div></summary><div class='docblock'><p>Attaches the current <a href="https://docs.rs/tracing/0.1.29/tracing/dispatcher/index.html#setting-the-default-subscriber">default</a> <a href="https://docs.rs/tracing-core/0.1.21/tracing_core/subscriber/trait.Subscriber.html"><code>Subscriber</code></a> to this type, returning a
 <a href="https://docs.rs/tracing/0.1.29/tracing/instrument/struct.WithDispatch.html" title="WithDispatch"><code>WithDispatch</code></a> wrapper. <a href="https://docs.rs/tracing/0.1.29/tracing/instrument/trait.WithSubscriber.html#method.with_current_subscriber">Read more</a></p>
 </div></details></div></details></div></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="axum_server" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script>
+    <script src="../../main.js"></script><script src="../../scrape-examples.js"></script>
 </body></html>
