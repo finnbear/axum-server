@@ -293,6 +293,15 @@
 <span id="293">293</span>
 <span id="294">294</span>
 <span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">accept</span>::{<span class="ident">Accept</span>, <span class="ident">DefaultAcceptor</span>},
     <span class="ident">handle::Handle</span>,
@@ -359,6 +368,15 @@
 
     <span class="doccomment">/// Serve provided [`MakeService`].</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">/// # Errors</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// An error will be returned when:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// - Binding to an address fails.</span>
+    <span class="doccomment">/// - `make_service` returns an error when `poll_ready` is called. This never happens on</span>
+    <span class="doccomment">/// [`axum`] make services.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`axum`]: https://docs.rs/axum/0.3</span>
     <span class="doccomment">/// [`MakeService`]: https://docs.rs/tower/0.4/tower/make/trait.MakeService.html</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">serve</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">make_service</span>: <span class="ident">M</span>) -&gt; <span class="ident">io::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
     <span class="kw">where</span>
