@@ -302,16 +302,30 @@
 <span id="302">302</span>
 <span id="303">303</span>
 <span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">accept</span>::{<span class="ident">Accept</span>, <span class="ident">DefaultAcceptor</span>},
     <span class="ident">handle::Handle</span>,
+    <span class="ident">http_config::HttpConfig</span>,
     <span class="ident">service</span>::{<span class="ident">MakeServiceRef</span>, <span class="ident">SendService</span>},
 };
 <span class="kw">use</span> <span class="ident">futures_util::future::poll_fn</span>;
 <span class="kw">use</span> <span class="ident">http::Request</span>;
 <span class="kw">use</span> <span class="ident">hyper::server</span>::{
     <span class="ident">accept::Accept</span> <span class="kw">as</span> <span class="ident">HyperAccept</span>,
-    <span class="ident">conn</span>::{<span class="ident">AddrIncoming</span>, <span class="ident">AddrStream</span>, <span class="ident">Http</span>},
+    <span class="ident">conn</span>::{<span class="ident">AddrIncoming</span>, <span class="ident">AddrStream</span>},
 };
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">ErrorKind</span>},
@@ -329,6 +343,7 @@
     <span class="ident">acceptor</span>: <span class="ident">A</span>,
     <span class="ident">addr</span>: <span class="ident">SocketAddr</span>,
     <span class="ident">handle</span>: <span class="ident">Handle</span>,
+    <span class="ident">http_conf</span>: <span class="ident">HttpConfig</span>,
 }
 
 <span class="doccomment">/// Create a [`Server`] that will bind to provided address.</span>
@@ -346,6 +361,7 @@
             <span class="ident">acceptor</span>,
             <span class="ident">addr</span>,
             <span class="ident">handle</span>,
+            <span class="ident">http_conf</span>: <span class="ident">HttpConfig::default</span>(),
         }
     }
 }
@@ -357,12 +373,19 @@
             <span class="ident">acceptor</span>,
             <span class="ident">addr</span>: <span class="self">self</span>.<span class="ident">addr</span>,
             <span class="ident">handle</span>: <span class="self">self</span>.<span class="ident">handle</span>,
+            <span class="ident">http_conf</span>: <span class="self">self</span>.<span class="ident">http_conf</span>,
         }
     }
 
     <span class="doccomment">/// Provide a handle for additional utilities.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">handle</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">handle</span>: <span class="ident">Handle</span>) -&gt; <span class="self">Self</span> {
         <span class="self">self</span>.<span class="ident">handle</span> <span class="op">=</span> <span class="ident">handle</span>;
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// Overwrite http configuration.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">http_config</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">config</span>: <span class="ident">HttpConfig</span>) -&gt; <span class="self">Self</span> {
+        <span class="self">self</span>.<span class="ident">http_conf</span> <span class="op">=</span> <span class="ident">config</span>;
         <span class="self">self</span>
     }
 
@@ -388,6 +411,7 @@
     {
         <span class="kw">let</span> <span class="ident">acceptor</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">acceptor</span>;
         <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">handle</span>;
+        <span class="kw">let</span> <span class="ident">http_conf</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">http_conf</span>;
 
         <span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">TcpListener::bind</span>(<span class="self">self</span>.<span class="ident">addr</span>).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">incoming</span> <span class="op">=</span> <span class="ident">AddrIncoming::from_listener</span>(<span class="ident">listener</span>).<span class="ident">map_err</span>(<span class="ident">io_other</span>)<span class="question-mark">?</span>;
@@ -413,13 +437,15 @@
 
                 <span class="kw">let</span> <span class="ident">acceptor</span> <span class="op">=</span> <span class="ident">acceptor</span>.<span class="ident">clone</span>();
                 <span class="kw">let</span> <span class="ident">watcher</span> <span class="op">=</span> <span class="ident">handle</span>.<span class="ident">watcher</span>();
+                <span class="kw">let</span> <span class="ident">http_conf</span> <span class="op">=</span> <span class="ident">http_conf</span>.<span class="ident">clone</span>();
 
                 <span class="ident">tokio::spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>((<span class="ident">stream</span>, <span class="ident">send_service</span>)) <span class="op">=</span> <span class="ident">acceptor</span>.<span class="ident">accept</span>(<span class="ident">addr_stream</span>, <span class="ident">service</span>).<span class="kw">await</span>
                     {
                         <span class="kw">let</span> <span class="ident">service</span> <span class="op">=</span> <span class="ident">send_service</span>.<span class="ident">into_service</span>();
 
-                        <span class="kw">let</span> <span class="ident">serve_future</span> <span class="op">=</span> <span class="ident">Http::new</span>()
+                        <span class="kw">let</span> <span class="ident">serve_future</span> <span class="op">=</span> <span class="ident">http_conf</span>
+                            .<span class="ident">inner</span>
                             .<span class="ident">serve_connection</span>(<span class="ident">stream</span>, <span class="ident">service</span>)
                             .<span class="ident">with_upgrades</span>();
 

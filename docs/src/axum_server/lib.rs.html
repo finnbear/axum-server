@@ -106,6 +106,8 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
 </pre><pre class="rust"><code><span class="doccomment">//! axum-server is a [hyper] server implementation designed to be used with [axum] framework.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Features</span>
@@ -164,7 +166,7 @@
 <span class="doccomment">//! [bind_rustls]: crate::bind_rustls</span>
 <span class="doccomment">//! [created]: https://docs.rs/axum/0.3/axum/struct.Router.html#method.into_make_service</span>
 <span class="doccomment">//! [hyper]: https://crates.io/crates/hyper</span>
-<span class="doccomment">//! [repository]: https://github.com/programatik29/axum-server/tree/master/examples</span>
+<span class="doccomment">//! [repository]: https://github.com/programatik29/axum-server/tree/v0.3.0/examples</span>
 <span class="doccomment">//! [rustls]: https://crates.io/crates/rustls</span>
 <span class="doccomment">//! [tower]: https://crates.io/crates/tower</span>
 <span class="doccomment">//! [`axum`]: https://docs.rs/axum/0.3</span>
@@ -196,6 +198,7 @@
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
 
 <span class="kw">mod</span> <span class="ident">handle</span>;
+<span class="kw">mod</span> <span class="ident">http_config</span>;
 <span class="kw">mod</span> <span class="ident">notify_once</span>;
 <span class="kw">mod</span> <span class="ident">server</span>;
 
@@ -204,6 +207,7 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::{
     <span class="ident">handle::Handle</span>,
+    <span class="ident">http_config::HttpConfig</span>,
     <span class="ident">server</span>::{<span class="ident">bind</span>, <span class="ident">Server</span>},
 };
 
