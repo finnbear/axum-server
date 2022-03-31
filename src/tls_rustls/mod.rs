@@ -299,6 +299,27 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn tls_timeout() {
+        let (handle, _server_task, addr) = start_server().await;
+        assert_eq!(handle.connection_count(), 0);
+
+        let stream = TcpStream::connect(addr).await.unwrap();
+
+        // We intentionally avoid driving a TLS handshake to completion.
+        std::mem::forget(stream);
+
+        for i in 0..120 {
+            tokio::time::sleep(Duration::from_secs(1)).await;
+            if handle.connection_count() == 0 {
+                println!("took {} seconds to cancel", i);
+                break;
+            }
+        }
+
+        assert_eq!(handle.connection_count(), 0, "two minutes is way too long");
+    }
+
+    #[tokio::test]
     async fn test_reload() {
         let handle = Handle::new();
 
